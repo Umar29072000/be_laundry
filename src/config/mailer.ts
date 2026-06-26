@@ -181,7 +181,7 @@ We will notify you once your laundry has been processed and is ready for pickup 
 <div style="text-align:center;">
 
 <a
-href="https://app.liveonline.codes"
+href="${env.FRONTEND_URL || 'https://app.liveonline.codes'}/track/${orderId}"
 style="
 display:inline-block;
 padding:14px 30px;
