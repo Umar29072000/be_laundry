@@ -1,0 +1,91 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  id                String     @id @default(uuid())
+  storeName         String
+  ownerName         String
+  email             String     @unique
+  passwordHash      String
+  phone             String
+  address           String
+  profilePictureUrl String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  customers         Customer[]
+  services          Service[]
+  orders            Order[]
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  email     String?
+  phone     String
+  address   String
+  createdAt DateTime @default(now())
+
+  orders    Order[]
+}
+
+model Service {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  name      String
+  price     Float
+  unit      String
+  createdAt DateTime @default(now())
+
+  orderItems OrderItem[]
+}
+
+model Order {
+  id            String      @id
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  customerId    String
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  totalPrice    Float
+  status        OrderStatus @default(Pending)
+  paymentMethod PaymentMethod
+  createdAt     DateTime    @default(now())
+  completedAt   DateTime?
+
+  orderItems    OrderItem[]
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  serviceId  String
+  service    Service  @relation(fields: [serviceId], references: [id])
+  quantity   Float
+  subtotal   Float
+}
+
+enum OrderStatus {
+  Pending
+  Washing
+  Ironing
+  Ready
+  Delivered
+}
+
+enum PaymentMethod {
+  Tunai
+  QRIS
+  Transfer_Bank
+}

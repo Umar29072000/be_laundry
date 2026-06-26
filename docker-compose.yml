@@ -1,0 +1,6 @@
+# Database (PostgreSQL), Storage, dan Cache sudah dipindahkan ke Supabase / dihapus.
+# Docker Compose ini tidak lagi dibutuhkan untuk development lokal.
+# Jalankan langsung dengan: npm run dev
+
+version: '3.8'
+services: {}
