@@ -96,34 +96,7 @@ export class OrderService {
     }
 
     const completedAt = status === 'Delivered' ? new Date() : undefined;
-    const updatedOrder = await orderRepo.updateStatus(orderId, status as OrderStatus, completedAt);
-
-    // Send WhatsApp only for important status updates (save quota)
-    if (order.customer?.phone && (status === 'Ready' || status === 'Delivered')) {
-      const storeName = order.tenant?.storeName || 'Laundry Online';
-      let statusText = '';
-      switch (status) {
-        case 'Ready':
-          statusText = 'telah selesai dan SIAP DIAMBIL! 📦 Silakan datang ke outlet atau hubungi kami untuk opsi pengiriman.';
-          break;
-        case 'Delivered':
-          statusText = 'telah selesai diambil/diserahkan. Terima kasih telah berlangganan! ❤️';
-          break;
-      }
-
-      if (statusText) {
-        const trackingUrl = `${env.FRONTEND_URL || 'https://app.liveonline.codes'}/track/${orderId}`;
-        const updateMessage = `Halo *${order.customer.name}*,\n\n` +
-          `Update status pesanan laundry Anda (*${orderId}*) di *${storeName}*:\n` +
-          `Status: *${statusText}*\n\n` +
-          `Pantau progres detail cucian Anda di sini:\n` +
-          `${trackingUrl}`;
-
-        sendWhatsAppMessage(order.customer.phone, updateMessage);
-      }
-    }
-
-    return updatedOrder;
+    return orderRepo.updateStatus(orderId, status as OrderStatus, completedAt);
   }
 
   async trackOrder(orderId: string) {
