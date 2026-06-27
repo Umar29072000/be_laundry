@@ -263,8 +263,7 @@ All Rights Reserved.
       subject: `Laundry Order Receipt - ${orderId}`,
       html,
     });
-    console.log(`✅ Receipt email sent to ${to}`);
-  } catch (error) {
-    console.error('❌ Error sending email:', error);
+  } catch {
+    // silent fail
   }
 };

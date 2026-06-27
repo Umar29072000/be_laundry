@@ -98,24 +98,16 @@ export class OrderService {
     const completedAt = status === 'Delivered' ? new Date() : undefined;
     const updatedOrder = await orderRepo.updateStatus(orderId, status as OrderStatus, completedAt);
 
-    // Send WhatsApp status update notification
-    if (order.customer?.phone) {
+    // Send WhatsApp only for important status updates (save quota)
+    if (order.customer?.phone && (status === 'Ready' || status === 'Delivered')) {
       const storeName = order.tenant?.storeName || 'Laundry Online';
       let statusText = '';
       switch (status) {
-        case 'Washing':
-          statusText = 'sedang masuk proses cuci bersih 🧺';
-          break;
-        case 'Ironing':
-          statusText = 'sedang dalam proses setrika rapi 💨';
-          break;
         case 'Ready':
           statusText = 'telah selesai dan SIAP DIAMBIL! 📦 Silakan datang ke outlet atau hubungi kami untuk opsi pengiriman.';
           break;
         case 'Delivered':
           statusText = 'telah selesai diambil/diserahkan. Terima kasih telah berlangganan! ❤️';
-          break;
-        default:
           break;
       }
 
