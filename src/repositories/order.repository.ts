@@ -22,7 +22,7 @@ export class OrderRepository {
       where: { id },
       include: {
         tenant: { select: { storeName: true, phone: true } },
-        customer: { select: { name: true, email: true } },
+        customer: { select: { name: true, email: true, phone: true } },
         orderItems: { include: { service: { select: { name: true } } } },
       },
     });

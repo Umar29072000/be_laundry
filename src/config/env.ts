@@ -18,6 +18,8 @@ const envSchema = z.object({
   SMTP_USER: z.string(),
   SMTP_PASS: z.string(),
   EMAIL_FROM: z.string(),
+  FONNTE_TOKEN: z.string().optional(),
+  WHATSAPP_ENABLED: z.string().optional().default('false').transform((val) => val === 'true'),
 });
 
 const _env = envSchema.safeParse(process.env);

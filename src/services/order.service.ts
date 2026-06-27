@@ -5,6 +5,8 @@ import { TenantRepository } from '../repositories/tenant.repository';
 import { AppError } from '../utils/AppError';
 import { generateOrderId } from '../utils/generateId';
 import { sendReceiptEmail } from '../config/mailer';
+import { sendWhatsAppMessage } from '../config/whatsapp';
+import { env } from '../config/env';
 import { PaymentMethod, OrderStatus } from '@prisma/client';
 
 const orderRepo = new OrderRepository();
@@ -61,10 +63,23 @@ export class OrderService {
       },
     });
 
+    const tenant = await tenantRepo.findById(tenantId);
+    const storeName = tenant?.storeName || 'Laundry Online';
+
     if (customer.email) {
-      const tenant = await tenantRepo.findById(tenantId);
-      const storeName = tenant?.storeName || 'Laundry Online';
       sendReceiptEmail(customer.email, orderId, totalPrice, customer.name, storeName);
+    }
+
+    if (customer.phone) {
+      const trackingUrl = `${env.FRONTEND_URL || 'https://app.liveonline.codes'}/track/${orderId}`;
+      const waMessage = `Halo *${customer.name}*,\n\n` +
+        `Pesanan laundry Anda di *${storeName}* dengan ID *${orderId}* telah berhasil diterima.\n` +
+        `Total Tagihan: *Rp ${totalPrice.toLocaleString('id-ID')}*\n\n` +
+        `Anda dapat memantau status pengerjaan laundry Anda secara langsung melalui tautan berikut:\n` +
+        `${trackingUrl}\n\n` +
+        `Terima kasih telah mempercayakan pakaian Anda kepada kami! ❤️`;
+
+      sendWhatsAppMessage(customer.phone, waMessage);
     }
 
     return newOrder;
@@ -81,7 +96,42 @@ export class OrderService {
     }
 
     const completedAt = status === 'Delivered' ? new Date() : undefined;
-    return orderRepo.updateStatus(orderId, status as OrderStatus, completedAt);
+    const updatedOrder = await orderRepo.updateStatus(orderId, status as OrderStatus, completedAt);
+
+    // Send WhatsApp status update notification
+    if (order.customer?.phone) {
+      const storeName = order.tenant?.storeName || 'Laundry Online';
+      let statusText = '';
+      switch (status) {
+        case 'Washing':
+          statusText = 'sedang masuk proses cuci bersih 🧺';
+          break;
+        case 'Ironing':
+          statusText = 'sedang dalam proses setrika rapi 💨';
+          break;
+        case 'Ready':
+          statusText = 'telah selesai dan SIAP DIAMBIL! 📦 Silakan datang ke outlet atau hubungi kami untuk opsi pengiriman.';
+          break;
+        case 'Delivered':
+          statusText = 'telah selesai diambil/diserahkan. Terima kasih telah berlangganan! ❤️';
+          break;
+        default:
+          break;
+      }
+
+      if (statusText) {
+        const trackingUrl = `${env.FRONTEND_URL || 'https://app.liveonline.codes'}/track/${orderId}`;
+        const updateMessage = `Halo *${order.customer.name}*,\n\n` +
+          `Update status pesanan laundry Anda (*${orderId}*) di *${storeName}*:\n` +
+          `Status: *${statusText}*\n\n` +
+          `Pantau progres detail cucian Anda di sini:\n` +
+          `${trackingUrl}`;
+
+        sendWhatsAppMessage(order.customer.phone, updateMessage);
+      }
+    }
+
+    return updatedOrder;
   }
 
   async trackOrder(orderId: string) {
