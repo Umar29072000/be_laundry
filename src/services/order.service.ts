@@ -1,6 +1,7 @@
 import { OrderRepository } from '../repositories/order.repository';
 import { CustomerRepository } from '../repositories/customer.repository';
 import { ServiceRepository } from '../repositories/service.repository';
+import { TenantRepository } from '../repositories/tenant.repository';
 import { AppError } from '../utils/AppError';
 import { generateOrderId } from '../utils/generateId';
 import { sendReceiptEmail } from '../config/mailer';
@@ -9,6 +10,7 @@ import { PaymentMethod, OrderStatus } from '@prisma/client';
 const orderRepo = new OrderRepository();
 const customerRepo = new CustomerRepository();
 const serviceRepo = new ServiceRepository();
+const tenantRepo = new TenantRepository();
 
 export class OrderService {
   async getOrders(tenantId: string) {
@@ -60,7 +62,9 @@ export class OrderService {
     });
 
     if (customer.email) {
-      sendReceiptEmail(customer.email, orderId, totalPrice, customer.name);
+      const tenant = await tenantRepo.findById(tenantId);
+      const storeName = tenant?.storeName || 'Laundry Online';
+      sendReceiptEmail(customer.email, orderId, totalPrice, customer.name, storeName);
     }
 
     return newOrder;

@@ -11,6 +11,10 @@ export class OrderResponseDTO {
       createdAt: order.createdAt,
       completedAt: order.completedAt,
       customer: order.customer ? CustomerResponseDTO.format(order.customer) : undefined,
+      tenant: order.tenant ? {
+        storeName: order.tenant.storeName,
+        phone: order.tenant.phone,
+      } : undefined,
       orderItems: order.orderItems ? order.orderItems.map((item: any) => ({
         id: item.id,
         quantity: item.quantity,

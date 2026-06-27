@@ -11,7 +11,7 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendReceiptEmail = async (to: string, orderId: string, total: number, customerName: string) => {
+export const sendReceiptEmail = async (to: string, orderId: string, total: number, customerName: string, storeName: string) => {
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -48,7 +48,7 @@ color:#ffffff;
 font-size:28px;
 font-weight:bold;
 ">
-Laundry Online
+${storeName}
 </h1>
 
 <p
@@ -72,7 +72,7 @@ Hello <strong>${customerName}</strong>,
 </p>
 
 <p style="font-size:15px;line-height:28px;color:#555;">
-Thank you for choosing <strong>Laundry Online</strong>.
+Thank you for choosing <strong>${storeName}</strong>.
 Your order has been successfully received and is currently being processed.
 </p>
 
@@ -215,7 +215,7 @@ color:#6b7280;
 ">
 
 <p style="margin:0 0 8px;">
-Thank you for trusting Laundry Online ❤️
+Thank you for trusting ${storeName} ❤️
 </p>
 
 <p style="margin:0;">
@@ -238,7 +238,7 @@ border-top:1px solid #e5e7eb;
 ">
 
 <p style="margin:0;color:#9ca3af;font-size:12px;">
-© ${new Date().getFullYear()} Laundry Online.
+© ${new Date().getFullYear()} ${storeName}.
 All Rights Reserved.
 </p>
 
