@@ -14,11 +14,11 @@ export const transporter = nodemailer.createTransport({
 export const sendReceiptEmail = async (to: string, orderId: string, total: number, customerName: string, storeName: string) => {
   const html = `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Laundry Receipt</title>
+<title>Nota Laundry</title>
 </head>
 
 <body style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#333333;">
@@ -57,7 +57,7 @@ margin-top:10px;
 color:#dbeafe;
 font-size:15px;
 ">
-Order Successfully Received
+Pesanan Berhasil Diterima
 </p>
 
 </td>
@@ -68,12 +68,12 @@ Order Successfully Received
 <td style="padding:40px;">
 
 <p style="font-size:17px;margin:0 0 20px;">
-Hello <strong>${customerName}</strong>,
+Halo <strong>${customerName}</strong>,
 </p>
 
 <p style="font-size:15px;line-height:28px;color:#555;">
-Thank you for choosing <strong>${storeName}</strong>.
-Your order has been successfully received and is currently being processed.
+Terima kasih telah memilih <strong>${storeName}</strong>.
+Pesanan Anda telah berhasil diterima dan sedang diproses.
 </p>
 
 <table
@@ -95,7 +95,7 @@ font-weight:bold;
 color:#555;
 width:45%;
 ">
-Order ID
+ID Pesanan
 </td>
 
 <td
@@ -115,7 +115,7 @@ padding:15px;
 font-weight:bold;
 color:#555;
 ">
-Total Payment
+Total Pembayaran
 </td>
 
 <td
@@ -126,31 +126,6 @@ font-weight:bold;
 color:#2563eb;
 ">
 Rp ${total.toLocaleString("id-ID")}
-</td>
-</tr>
-
-<tr>
-<td
-style="
-padding:15px;
-font-weight:bold;
-color:#555;
-">
-Status
-</td>
-
-<td style="padding:15px;">
-<span
-style="
-background:#dcfce7;
-color:#166534;
-padding:6px 12px;
-border-radius:20px;
-font-size:13px;
-font-weight:bold;
-">
-Order Received
-</span>
 </td>
 </tr>
 
@@ -172,8 +147,8 @@ font-size:14px;
 line-height:24px;
 color:#374151;
 ">
-You can track your laundry order using your Order ID through our application.
-We will notify you once your laundry has been processed and is ready for pickup or delivery.
+Anda dapat melacak status pesanan laundry menggunakan ID Pesanan melalui tautan di bawah.
+Kami akan memberi tahu Anda setelah laundry selesai diproses dan siap diambil atau diantar.
 </p>
 
 </div>
@@ -193,7 +168,7 @@ font-weight:bold;
 font-size:15px;
 ">
 
-Track My Order
+Lacak Pesanan Saya
 
 </a>
 
@@ -215,11 +190,11 @@ color:#6b7280;
 ">
 
 <p style="margin:0 0 8px;">
-Thank you for trusting ${storeName} ❤️
+Terima kasih telah mempercayakan ${storeName} ❤️
 </p>
 
 <p style="margin:0;">
-Need help?
+Butuh bantuan?
 <a
 href="mailto:support@mail.liveonline.codes"
 style="
@@ -239,7 +214,7 @@ border-top:1px solid #e5e7eb;
 
 <p style="margin:0;color:#9ca3af;font-size:12px;">
 © ${new Date().getFullYear()} ${storeName}.
-All Rights Reserved.
+Hak Cipta Dilindungi.
 </p>
 
 </td>
@@ -260,7 +235,7 @@ All Rights Reserved.
     await transporter.sendMail({
       from: env.EMAIL_FROM,
       to,
-      subject: `Laundry Order Receipt - ${orderId}`,
+      subject: `Nota Pesanan Laundry - ${orderId}`,
       html,
     });
   } catch {
