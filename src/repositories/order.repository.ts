@@ -69,7 +69,7 @@ export class OrderRepository {
     return prisma.order.count({ where: { tenantId, status: 'Pending' } });
   }
 
-  async getRevenueByTenant(tenantId: string) {
+  async getRevenueByTenant(tenantId: string, dateRange?: { start: Date; end: Date }) {
     return prisma.order.aggregate({
       _sum: {
         totalPrice: true,
@@ -77,6 +77,12 @@ export class OrderRepository {
       where: {
         tenantId,
         status: 'Delivered',
+        ...(dateRange ? {
+          completedAt: {
+            gte: dateRange.start,
+            lte: dateRange.end,
+          },
+        } : {}),
       },
     });
   }
