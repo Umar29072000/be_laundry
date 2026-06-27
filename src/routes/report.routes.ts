@@ -1,11 +1,8 @@
 import { Router } from 'express';
-import { getReports } from '../controllers/report.controller';
-import { protect } from '../middlewares/auth.middleware';
+import { exportReports } from '../controllers/report-export.controller';
 
 const router = Router();
 
-router.use(protect);
-
-router.get('/', getReports);
+router.get('/export', exportReports);
 
 export default router;
